@@ -25,7 +25,7 @@ TARGET_CPU_ABI2 :=
 TARGET_CPU_VARIANT := cortex-a53
 
 TARGET_2ND_ARCH := arm
-TARGET_2ND_ARCH_VARIANT := armv7-a-neon
+TARGET_2ND_ARCH_VARIANT := armv8-a
 TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a53
@@ -60,10 +60,13 @@ BOARD_RECOVERYIMAGE_PARTITION_SIZE := 33554432
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 2859466752
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 11632902144
 
+# Assert
+TARGET_OTA_ASSERT_DEVICE := a37f,A37f,A37fw,a37fw,msm8916,msm8939
+
 # Recovery
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/etc/twrp.fstab
-TARGET_RECOVERY_PIXEL_FORMAT := "RGB_565"
+BOARD_HAS_NO_SELECT_BUTTON := true
 
 # TWRP specific build flags
 TW_THEME := portrait_hdpi
@@ -75,3 +78,15 @@ BOARD_HAS_NO_REAL_SDCARD := true
 TW_INPUT_BLACKLIST := "accelerometer"
 TW_BRIGHTNESS_PATH := "/sys/class/leds/lcd-backlight/brightness"
 TW_IGNORE_ABS_MT_TRACKING_ID := true
+TWRP_INCLUDE_LOGCAT := true
+TARGET_USES_LOGD := true
+TW_EXCLUDE_TWRPAPP := true
+TW_EXCLUDE_SUPERSU := true
+
+# Timezone package
+PRODUCT_COPY_FILES += \
+    system/timezone/output_data/iana/tzdata:recovery/root/system_root/system/usr/share/zoneinfo/tzdata
+
+# LZMA ramdisk compression
+LZMA_RAMDISK_TARGETS := recovery
+LZMA_COMPRESSION := -9
