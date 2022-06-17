@@ -30,6 +30,14 @@ $(call inherit-product, vendor/omni/config/gsm.mk)
 PRODUCT_PACKAGES += \
     charger_res_images \
     charger
+    
+# Explicitly
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.hardware.keystore=msm8916
+
+# The kernel does not support aio with ffs.
+PRODUCT_PROPERTY_OVERRIDES += \
+	sys.usb.ffs.aio_compat=1    
 
 # Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := A37

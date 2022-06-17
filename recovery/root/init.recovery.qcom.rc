@@ -1,104 +1,48 @@
-on firmware_mounts_complete
-    rm /dev/.booting
+on fs
+    wait /dev/block/platform/soc.0/${ro.boot.bootdevice}
+    symlink /dev/block/platform/soc.0/${ro.boot.bootdevice} /dev/block/bootdevice
 
 on init
+    chmod 0660 /dev/vm_bms
+    chown system system /dev/vm_bms
+    chmod 0660 /dev/battery_data
+    chown system system /dev/battery_data
+
+    # vm_bms
+    chown root system /sys/class/power_supply/bms/capacity
+    chmod 0660 /sys/class/power_supply/bms/capacity
+    chown root system /sys/class/power_supply/bms/current_now
+    chown root system /sys/class/power_supply/bms/voltage_ocv
+    chmod 0664 /sys/class/power_supply/bms/current_now
+    chmod 0664 /sys/class/power_supply/bms/voltage_ocv
+
+    # needed to make qseecomd work in recovery
     chmod 0660 /dev/qseecom
     chown system drmrpc /dev/qseecom
     chmod 0664 /dev/ion
     chown system system /dev/ion
 
-on late-init
-    # Remove a file to wake up anything waiting for firmware.
-    trigger firmware_mounts_complete
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
 
-    trigger boot
+on property:ro.crypto.state=encrypted
+    start sbinqseecomd
 
-on fs
-    # Make bootdevice symlink
-    wait /dev/block/platform/soc.0/${ro.boot.bootdevice}
-    symlink /dev/block/platform/soc.0/${ro.boot.bootdevice} /dev/block/bootdevice
-
-on boot
-    # HMP scheduler load tracking settings
-    write /proc/sys/kernel/sched_window_stats_policy 3
-    write /proc/sys/kernel/sched_ravg_hist_size 3
-
-    # HMP Task packing settings for 8916
-    write /proc/sys/kernel/sched_small_task 20
-    write /proc/sys/kernel/sched_mostly_idle_load 30
-    write /proc/sys/kernel/sched_mostly_idle_nr_run 3
-
-    # disable thermal core_control to update interactive governor settings
-    write /sys/module/msm_thermal/core_control/enabled 0
-
-    # enable governor
-    write /sys/devices/system/cpu/cpu0/online 1
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 200000
-
-    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay 20000
-    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 90
-    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 60000
-    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 1094400
-    write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 0
-    write /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration 60000
-    write /sys/devices/system/cpu/cpufreq/interactive/target_loads "1 998400:85 1094400:90 1209600:95"
-    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 60000
-    write /sys/devices/system/cpu/cpufreq/interactive/max_freq_hysteresis 80000
-    
-    # enable thermal core_control now
-    write /sys/kernel/msm_thermal/zone0 "1152000 64 61"
-    write /sys/kernel/msm_thermal/zone1 "1094400 68 65"
-    write /sys/kernel/msm_thermal/zone2 "8000000 70 69"
-    write /sys/kernel/msm_thermal/zone3 "533333 73 71"
-    write /sys/kernel/msm_thermal/zone4 "400000 77 74"
-    write /sys/module/msm_thermal/core_control/enabled 1
-    write /sys/kernel/msm_thermal/sampling_ms 1000
-    write /sys/kernel/msm_thermal/enabled 1
-
-    # bring all CPUs online
-    write /sys/devices/system/cpu/cpu1/online 1
-    write /sys/devices/system/cpu/cpu2/online 1
-    write /sys/devices/system/cpu/cpu3/online 1
-    
-    # Enable low power modes
-    write /sys/module/lpm_levels/parameters/sleep_disabled 0
-
-    # Set RPS mask
-    write /sys/class/net/rmnet0/queues/rx-0/rps_cpus 2
-
-    # Enable core control
-    write /sys/devices/system/cpu/cpu0/core_ctl/min_cpus 0
-    write /sys/devices/system/cpu/cpu0/core_ctl/max_cpus 4
-    write /sys/devices/system/cpu/cpu0/core_ctl/busy_up_thres 68
-    write /sys/devices/system/cpu/cpu0/core_ctl/busy_down_thres 30
-    write /sys/devices/system/cpu/cpu0/core_ctl/offline_delay_ms 100
-    write /sys/devices/system/cpu/cpu0/core_ctl/is_big_cluster 0
-    write /sys/devices/system/cpu/cpu0/core_ctl/task_thres 4
-    
-    # enable CPU input boost
-    write /sys/module/cpu_boost/parameters/boost_ms 40
-    write /sys/module/cpu_boost/parameters/input_boost_freq "0:998400 1:998400"
-
-    # Set read_ahead value to 2MB
-    write /sys/block/mmcblk0/queue/read_ahead_kb 2048
-    write /sys/block/mmcblk1/queue/read_ahead_kb 2048
-    
-service qseecomd /sbin/qseecomd
+# separate copy needed to use /sbin/linker instead of /system/bin/linker
+service sbinqseecomd /sbin/qseecomd
     oneshot
     disabled
     user root
     group root
     seclabel u:r:recovery:s0
 
-on property:ro.crypto.state=encrypted
-    start qseecomd
+service vm_bms /sbin/vm_bms
+    user root
+    group root
+    seclabel u:r:init:s0
 
-# used only for bringing up decrypt and keeping it around for future ref
-service logd /system/bin/logd
-    disabled
-    class core
-    socket logd stream 0666 logd logd
-    socket logdr seqpacket 0666 logd logd
-    socket logdw dgram 0222 logd logd
-    group root system
+on property:ro.crypto.state=encrypted
+    start sbinqseecomd
+
+on property:ro.twrp.boot=1
+    write /proc/boot_completed_prop 1
+    setprop persist.sys.usb.config mtp,adb
