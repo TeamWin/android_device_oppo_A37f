@@ -21,6 +21,6 @@
 /dev/block/bootdevice/by-name/reserve4	     /reserve4         emmc flags=display="RESERVE4";backup=1;
 /dev/block/bootdevice/by-name/oppodycnvbk    /oppodycnvbk      emmc flags=display="OPPODYCNVBK";backup=1;
 /dev/block/bootdevice/by-name/oppostanvbk    /static_nv_bk     emmc flags=display="OPPOSTANVBK";backup=1;
-/dev/block/mmcblk1p1	 /dev/block/mmcblk1  /external_sd      auto flags=display="Micro SDCard";storage;wipeingui;removable
+/dev/block/mmcblk1p1    /external_sd      auto flags=display="Micro SDCard";storage;wipeingui;removable
 /dev/block/bootdevice/by-name/fsg	     /fsg	       emmc flags=display="Efs";backup=1
 /dev/block/bootdevice/by-name/oem	     /oem              emmc flags=display="OEM";backup=1
