@@ -15,6 +15,7 @@
 /dev/block/bootdevice/by-name/LOGO           /logo             emmc flags=display="LOGO";backup=1;
 /dev/block/bootdevice/by-name/modemst1	     /modem_st1        emmc flags=display="MODEM1";backup=1;
 /dev/block/bootdevice/by-name/modemst2	     /modem_st2        emmc flags=display="MODEM2";backup=1;
+/usb-otg         vfat              /dev/block/sda1      /dev/block/sda              flags=removable;storage;display=USB-OTG
 
 # OPPO Partitions
 /dev/block/bootdevice/by-name/DRIVER	     /driver	       emmc flags=display="DRIVER";backup=1;
