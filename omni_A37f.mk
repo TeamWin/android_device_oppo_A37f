@@ -26,8 +26,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 $(call inherit-product, vendor/omni/config/common.mk)
 $(call inherit-product, vendor/omni/config/gsm.mk)
 
-# Inherit from A37 device
-$(call inherit-product, device/oppo/A37/device.mk)
+# Inherit from A37f device
+$(call inherit-product, device/oppo/A37f/device.mk)
 
 PRODUCT_PACKAGES += \
     charger_res_images \
@@ -42,17 +42,17 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	sys.usb.ffs.aio_compat=1    
 
 # Device identifier. This must come after all inclusions
-PRODUCT_DEVICE := A37
-PRODUCT_NAME := omni_A37
+PRODUCT_DEVICE := A37f
+PRODUCT_NAME := omni_A37f
 PRODUCT_BRAND := Oppo
-PRODUCT_MODEL := A37
+PRODUCT_MODEL := A37f
 PRODUCT_MANUFACTURER := Oppo
-PRODUCT_RELEASE_NAME := Oppo A37
+PRODUCT_RELEASE_NAME := Oppo A37f
 
 # Enable stock zip packages flash
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    ro.build.product=A37 \
-    ro.product.device=A37 \
-    ro.product.model=A37
+    ro.build.product=A37f \
+    ro.product.device=A37f \
+    ro.product.model=A37f
 
 ALLOW_MISSING_DEPENDENCIES := true

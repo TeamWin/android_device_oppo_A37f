@@ -15,7 +15,7 @@
 #
 
 FORCE_32_BIT := true
-DEVICE_PATH := device/oppo/A37
+DEVICE_PATH := device/oppo/A37f
 
 # Architecture
 TARGET_BOARD_SUFFIX := _32

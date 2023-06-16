@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-LOCAL_PATH := device/oppo/A37
+LOCAL_PATH := device/oppo/A37f
 
 # TWRP specific build flags
 TW_DEFAULT_LANGUAGE := en-US
