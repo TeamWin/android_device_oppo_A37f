@@ -26,6 +26,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 $(call inherit-product, vendor/omni/config/common.mk)
 $(call inherit-product, vendor/omni/config/gsm.mk)
 
+# Inherit from A37 device
+$(call inherit-product, device/oppo/A37/device.mk)
 
 PRODUCT_PACKAGES += \
     charger_res_images \
