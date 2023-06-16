@@ -29,6 +29,7 @@ TW_IGNORE_ABS_MT_TRACKING_ID := true
 TW_USE_TOOLBOX := true
 TW_CRYPTO_USE_SBIN_VOLD := true
 TW_THEME := portrait_hdpi
+TW_INPUT_BLACKLIST := "hbtp_vm"
 
 #adbd insecure
 BOARD_ALWAYS_INSECURE := true
